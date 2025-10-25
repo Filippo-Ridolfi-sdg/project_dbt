@@ -1,0 +1,7 @@
+sources:
+  - name: project
+    database: project_dbt
+    schema: schema_dbt
+    tables:
+      - name: customers
+      - name: products
