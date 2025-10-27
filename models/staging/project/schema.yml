@@ -4,4 +4,6 @@ sources:
     schema: schema_dbt
     tables:
       - name: customers
+      - name: customers_t1
       - name: products
+      - name: products_t1
