@@ -1,9 +1,34 @@
+version: 2
+
 sources:
   - name: project
     database: project_dbt
     schema: schema_dbt
     tables:
       - name: customers_t0
+        columns:
+          - name: customer_cd
+            tests:
+              - unique
+              - not_null
+
       - name: customers_t1
+        columns:
+          - name: customer_cd
+            tests:
+              - unique
+              - not_null
+
       - name: products_t0
+        columns:
+          - name: PRODUCT_CD
+            tests:
+              - unique
+              - not_null
+
       - name: products_t1
+        columns:
+          - name: PRODUCT_CD
+            tests:
+              - unique
+              - not_null

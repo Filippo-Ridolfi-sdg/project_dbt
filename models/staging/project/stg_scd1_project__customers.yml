@@ -1,0 +1,35 @@
+models:
+  - name: stg_scd1_project__customers
+    description: "Modello staging per i clienti, gestito come SCD di Tipo 1."
+    columns:
+      - name: customer_id
+        data_type: varchar
+        description: "La chiave surrogata (hash) del cliente."
+
+      - name: customer_cd
+        data_type: varchar
+        description: "Il codice business univoco del cliente."
+
+      - name: customer_name
+        data_type: varchar
+        description: "Nome e cognome del cliente."
+
+      - name: customer_email
+        data_type: varchar
+        description: "Indirizzo email del cliente."
+
+      - name: customer_city
+        data_type: varchar
+        description: "Città di residenza del cliente."
+
+      - name: member_since
+        data_type: date
+        description: "Data di registrazione del cliente."
+
+      - name: last_update
+        data_type: timestamp_ntz
+        description: "Timestamp dell'ultimo aggiornamento del record."
+
+      - name: is_deleted
+        data_type: boolean
+        description: "True se il record è stato contrassegnato come eliminato."
