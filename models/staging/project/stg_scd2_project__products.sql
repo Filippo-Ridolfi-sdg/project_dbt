@@ -1,28 +1,26 @@
 with 
 
 source_t0 as ( 
-    select * from {{ source('project', 'customers_t0') }}
+    select * from {{ source('project', 'products_t0') }}
 ),
 
 source_t1 as ( 
-    select * from {{ source('project', 'customers_t1') }}
+    select * from {{ source('project', 'products_t1') }}
 ),
 
 select_t0 as (
 
     select 
         {{ dbt_utils.generate_surrogate_key([
-            'customer_cd'
-        ]) }} as customer_id,
+            'PRODUCT_CD'
+        ]) }} as product_id,
 
-        customer_cd,
-        name as customer_name,
-        email as customer_email,
-        city as customer_city,
-        member_since,
-        cast(last_update as timestamp) as last_update,
-        
-        coalesce(is_deleted, 0) = 1 as is_deleted
+        PRODUCT_CD,
+        MODEL_NAME,
+        BRAND,
+        CATEGORY,
+        cast(LIST_PRICE as numeric(10, 2)) as list_price,
+        COLOR
 
     from source_t0
 ),
@@ -31,57 +29,37 @@ select_t1 as (
 
     select 
         {{ dbt_utils.generate_surrogate_key([
-            'customer_cd'
-        ]) }} as customer_id,
+            'PRODUCT_CD'
+        ]) }} as product_id,
 
-        customer_cd,
-        name as customer_name,
-        email as customer_email,
-        city as customer_city,
-        member_since,
-        
-        cast(last_update as timestamp) as last_update,
-        
-        coalesce(is_deleted, 0) = 1 as is_deleted
+        PRODUCT_CD,
+        MODEL_NAME,
+        BRAND,
+        CATEGORY,
+        cast(LIST_PRICE as numeric(10, 2)) as list_price,
+        COLOR
 
     from source_t1
 ),
 
-unioned_data as (
-
-    select * from select_t0
-    
-    union all
-    
-    select * from select_t1
-),
-
-distinct_versions as (
-
-    select distinct *
-    from unioned_data
-),
-
-final as (
+ final as (
 
     select
-        customer_id,
-        customer_cd,
-        customer_name,
-        customer_email, 
-        customer_city, 
-        member_since,
-        is_deleted,
+        coalesce(t1.product_id, t0.product_id) as product_id,
+        coalesce(t1.product_cd, t0.product_cd) as product_cd,
         
-        last_update as valid_from,
+        coalesce(t1.MODEL_NAME, t0.MODEL_NAME) as MODEL_NAME,
+        coalesce(t1.BRAND, t0.BRAND) as BRAND, 
+        coalesce(t1.CATEGORY, t0.CATEGORY) as CATEGORY, 
+        coalesce(t1.list_price, t0.list_price) as list_price,
+        coalesce(t1.COLOR, t0.COLOR) as COLOR,
         
-        lead(last_update) over (
-            partition by customer_id
-            order by last_update asc
-        ) as valid_to
-        
-    from distinct_versions
+        (t1.product_id is null) as is_deleted
+    
+    from select_t1 as t1
+    
+    full outer join select_t0 as t0
+        on t1.product_id = t0.product_id
 )
 
 select * from final
-where is_deleted = False
