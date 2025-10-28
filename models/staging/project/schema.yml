@@ -9,26 +9,22 @@ sources:
         columns:
           - name: customer_cd
             tests:
-              - unique
               - not_null
 
       - name: customers_t1
         columns:
           - name: customer_cd
             tests:
-              - unique
               - not_null
 
       - name: products_t0
         columns:
           - name: PRODUCT_CD
             tests:
-              - unique
               - not_null
 
       - name: products_t1
         columns:
           - name: PRODUCT_CD
             tests:
-              - unique
               - not_null

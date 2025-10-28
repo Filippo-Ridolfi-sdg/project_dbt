@@ -5,33 +5,25 @@ models:
     description: "Modello staging per i prodotti. Implementa una logica SCD di Tipo 1, mostrando lo stato più recente di ogni prodotto. I record presenti nella fonte precedente (t0) ma non in quella attuale (t1) vengono contrassegnati come 'is_deleted = True'."
     columns:
       - name: product_id
-        data_type: varchar
         description: "Chiave surrogata (hash) generata dal product_cd. Usata per le join."
 
       - name: product_cd
-        data_type: varchar
         description: "La chiave di business univoca del prodotto (es. SKU)."
 
       - name: model_name
-        data_type: varchar
         description: "Il nome del modello del prodotto (es. 'Air Max 90')."
 
       - name: brand
-        data_type: varchar
         description: "Il brand del prodotto (es. 'Nike', 'Adidas')."
 
       - name: category
-        data_type: varchar
         description: "La categoria del prodotto (es. 'Sneakers', 'Running')."
 
       - name: list_price
-        data_type: number
         description: "Il prezzo di listino del prodotto."
 
       - name: color
-        data_type: varchar
         description: "Il colore/i colori principali del prodotto."
 
       - name: is_deleted
-        data_type: boolean
         description: "Flag booleano. È 'True' se il prodotto era presente in t0 ma non è presente in t1 (la fonte più recente)."
