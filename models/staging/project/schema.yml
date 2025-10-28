@@ -3,7 +3,7 @@ sources:
     database: project_dbt
     schema: schema_dbt
     tables:
-      - name: customers
+      - name: customers_t0
       - name: customers_t1
-      - name: products
+      - name: products_t0
       - name: products_t1
