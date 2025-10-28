@@ -63,3 +63,4 @@ select_t1 as (
 )
 
 select * from final
+where is_deleted = False
