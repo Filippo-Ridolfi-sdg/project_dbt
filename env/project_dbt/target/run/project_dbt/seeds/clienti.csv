@@ -1,0 +1,14 @@
+
+    
+    
+    
+    create table project_dbt.schema_dbt.clienti (ID_CLIENTE text,NOME text,EMAIL text,CITTA text,MEMBRO_DAL date)
+  ;
+    -- dbt seed --
+    
+            insert into project_dbt.schema_dbt.clienti (ID_CLIENTE, NOME, EMAIL, CITTA, MEMBRO_DAL) values
+            (%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s)
+        
+
+;
+  

@@ -1,0 +1,13 @@
+project_dbt:
+  outputs:
+    dev:
+      account: JGB64726
+      database: project_dbt
+      password: Filo@Snowflake01!
+      role: role_dbt
+      schema: schema_dbt
+      threads: 6
+      type: snowflake
+      user: FILIPPORIDOLFI
+      warehouse: project_dbt_warehouse
+  target: dev

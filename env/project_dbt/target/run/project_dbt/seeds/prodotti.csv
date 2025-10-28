@@ -1,0 +1,14 @@
+
+    
+    
+    
+    create table project_dbt.schema_dbt.prodotti (ID_PRODOTTO text,NOME_MODELLO text,MARCA text,CATEGORIA text,PREZZO_LISTINO float8,COLORE text)
+  ;
+    -- dbt seed --
+    
+            insert into project_dbt.schema_dbt.prodotti (ID_PRODOTTO, NOME_MODELLO, MARCA, CATEGORIA, PREZZO_LISTINO, COLORE) values
+            (%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s)
+        
+
+;
+  

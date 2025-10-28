@@ -1,0 +1,1 @@
+select * from project_dbt.schema_dbt.stg_project__products
