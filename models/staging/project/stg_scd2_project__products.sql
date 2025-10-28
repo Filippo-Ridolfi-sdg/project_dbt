@@ -85,3 +85,4 @@ select
     is_valid
 from final
 where rn = 1
+order by PRODUCT_CD
