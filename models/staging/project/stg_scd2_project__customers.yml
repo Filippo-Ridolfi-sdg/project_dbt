@@ -2,31 +2,16 @@ version: 2
 
 models:
   - name: stg_scd2_project__customers
-    description: "Modello staging che costruisce lo storico completo (SCD Tipo 2) dei clienti. Ogni riga rappresenta una versione specifica dei dati di un cliente, valida per un determinato intervallo di tempo."
     columns:
-      - name: customer_id
-        description: "La chiave surrogata (hash) del cliente. Questa chiave è condivisa tra tutte le versioni storiche dello stesso cliente."
-
+      - name: customer_update_id
       - name: customer_cd
-        description: "Il codice business univoco del cliente (chiave naturale)."
-
-      - name: customer_name
-        description: "Nome e cognome del cliente per questa specifica versione storica."
-
-      - name: customer_email
-        description: "Indirizzo email del cliente per questa specifica versione storica."
-
-      - name: customer_city
-        description: "Città di residenza del cliente per questa specifica versione storica."
-
+      - name: name
+      - name: email
+      - name: city
       - name: member_since
-        description: "Data di registrazione originale del cliente."
-
+      - name: last_update
       - name: is_deleted
-        description: "Flag booleano. È 'True' se questa versione del record rappresenta uno stato 'eliminato'."
-
+      - name: dbt_updated_at
       - name: valid_from
-        description: "Il timestamp da cui questa versione del record è diventata valida (tipicamente il 'last_update')."
-
       - name: valid_to
-        description: "Il timestamp in cui questa versione del record è stata sostituita. È 'NULL' se questa è la versione attualmente attiva."
+      - name: is_current

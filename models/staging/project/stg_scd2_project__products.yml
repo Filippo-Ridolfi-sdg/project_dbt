@@ -1,29 +1,14 @@
-version: 2
-
 models:
   - name: stg_scd2_project__products
-    description: "Modello staging che costruisce uno storico dei prodotti (SCD Tipo 2). Ogni riga rappresenta una versione unica di un prodotto nel tempo. La colonna `is_valid` indica quale riga è quella attualmente attiva."
+    description: ""
     columns:
       - name: product_id
-        description: "Chiave surrogata (hash) generata dal product_cd. Usata per tracciare lo storico dello stesso prodotto."
-
       - name: product_cd
-        description: "La chiave di business univoca del prodotto (es. SKU)."
-
       - name: model_name
-        description: "Il nome del modello del prodotto (es. 'Air Max 90') in questa versione storica."
-
       - name: brand
-        description: "Il brand del prodotto (es. 'Nike', 'Adidas') in questa versione storica."
-
       - name: category
-        description: "La categoria del prodotto (es. 'Sneakers', 'Running') in questa versione storica."
-
       - name: list_price
-        description: "Il prezzo di listino del prodotto in questa versione storica."
-
       - name: color
-        description: "Il colore/i colori principali del prodotto in questa versione storica."
-
-      - name: is_valid
-        description: "Flag booleano. È 'True' se la riga rappresenta la versione attualmente attiva del prodotto. È 'False' se la riga è una versione storica (sovrascritta da una modifica) o un record non più attivo."
+      - name: is_deleted
+      - name: dbt_updated_at
+      - name: is_current

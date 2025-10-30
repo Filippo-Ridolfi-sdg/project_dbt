@@ -31,9 +31,9 @@ changed_records_source as (
             t.product_cd = s.product_cd
             -- b. Troviamo la versione ATTIVA
             and t.is_current = true
-            and COALESCE(t.category, 'DBT_NULL_STR') = COALESCE(s.category, 'DBT_NULL_STR')
-            and COALESCE(t.list_price, 0) = COALESCE(s.list_price, 0)
-            and COALESCE(t.color, 'DBT_NULL_STR') = COALESCE(s.color, 'DBT_NULL_STR')
+            and t.category = s.category
+            and t.list_price = s.list_price
+            and t.color = s.color
             and COALESCE(t.is_deleted, false) = COALESCE(s.is_deleted, false)
     )
 ),
@@ -63,6 +63,7 @@ rows_to_insert as (
 -- 3. Righe da AGGIORNARE/CHIUDERE (Le vecchie versioni che devono essere contrassegnate come non più correnti)
 rows_to_update as (
     select
+        t.product_id,
         t.product_cd,
         t.model_name,
         t.brand,
@@ -82,7 +83,8 @@ rows_to_update as (
 
 -- Finalizzazione
 final as (
-    select * from rows_to_insert
+    select {{ dbt_utils.generate_surrogate_key(['product_cd', 'is_current']) }} as product_id,
+    * from rows_to_insert
     
     {% if is_incremental() %}
     union all
