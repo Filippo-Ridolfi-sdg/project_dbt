@@ -1,4 +1,4 @@
-# project_dbt
+# PROJECT_DBT
 
 README sintetico per il progetto dbt "project_dbt".
 
