@@ -5,6 +5,11 @@
         incremental_strategy = 'delete+insert',
     ) 
 }}
+
+/*
+    CTE source che sceglie da quale tabella leggere i dati di input
+*/
+
 with 
 
 source as (
@@ -16,6 +21,13 @@ source as (
     from {{ source('project', 'customers_t0') }}
     {% endif %}
 ),
+
+/*
+    CALCOLO DEL DELTA 
+    Viene applicato il filtro incrementale. 
+    Se è incrementale -> seleziona SOLO i record dalla fonte che sono più recenti dell'ultimo record già presente 
+                        nella tabella di destinazione
+*/
 
 delta_calc as (
     select
@@ -31,6 +43,12 @@ delta_calc as (
     where last_update > (select max(last_update) from {{ this }})
     {% endif %}
 ),
+
+/*
+    CTE final prende i record dalla CTE precedente. 
+    1. Genera una chiave surrogata
+    2. Aggiunge timestamp di elaborazione
+*/
 
 final as (
     select

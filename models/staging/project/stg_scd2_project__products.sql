@@ -1,4 +1,4 @@
-{{ 
+{{
     config(
         materialized = 'incremental',
         unique_key = ['product_cd','is_current'], 
@@ -18,7 +18,10 @@ with source_data as (
 ),
 
 {% if is_incremental() %}
--- 1. Identifica i record NUOVI o MODIFICATI confrontando tutti i campi rilevanti
+
+/*
+    Isola solo i record della sorgente che sono nuovi o modificati
+*/
 changed_records_source as (
     select
         s.*
@@ -27,19 +30,19 @@ changed_records_source as (
         select 1
         from {{ this }} as t
         where 
-            -- a. Troviamo la corrispondenza per la chiave naturale
             t.product_cd = s.product_cd
-            -- b. Troviamo la versione ATTIVA
             and t.is_current = true
             and t.category = s.category
             and t.list_price = s.list_price
             and t.color = s.color
-            and COALESCE(t.is_deleted, false) = COALESCE(s.is_deleted, false)
+            and coalesce(t.is_deleted, false) = coalesce(s.is_deleted, false)
     )
 ),
 {% endif %}
 
--- 2. Righe da INSERIRE (Nuovi record o nuove versioni di record esistenti)
+/*
+    Prepara le nuove versioni dei record
+*/
 rows_to_insert as (
     select
         product_cd,
@@ -50,7 +53,9 @@ rows_to_insert as (
         color,
         is_deleted,
         current_timestamp() as dbt_updated_at,
-        true as is_current         
+        true as is_current,
+        current_timestamp() as valid_from,
+        cast(null as timestamp) as valid_to
     from 
     {% if is_incremental() %}
         changed_records_source 
@@ -60,7 +65,11 @@ rows_to_insert as (
 ),
 
 {% if is_incremental() %}
--- 3. Righe da AGGIORNARE/CHIUDERE (Le vecchie versioni che devono essere contrassegnate come non più correnti)
+
+/*
+    Preparazione delle righe da "chiudere" (solo in modalità incrementale)
+    Imposta valid_to per i record non più attivi
+*/
 rows_to_update as (
     select
         t.product_id,
@@ -72,19 +81,20 @@ rows_to_update as (
         t.color,
         t.is_deleted,
         t.dbt_updated_at,
-        false as is_current
+        false as is_current,
+        t.valid_from,
+        current_timestamp() as valid_to
     from {{ this }} as t
-    -- Unisci con i record sorgente modificati per trovare i record 'is_current = true' da chiudere
     inner join changed_records_source s
         on t.product_cd = s.product_cd
     where t.is_current = true
 ),
 {% endif %}
 
--- Finalizzazione
 final as (
     select {{ dbt_utils.generate_surrogate_key(['product_cd', 'is_current']) }} as product_id,
-    * from rows_to_insert
+        * 
+    from rows_to_insert
     
     {% if is_incremental() %}
     union all

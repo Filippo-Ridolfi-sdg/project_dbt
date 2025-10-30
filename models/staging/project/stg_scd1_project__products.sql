@@ -17,6 +17,12 @@ source as (
     {% endif %}
 ),
 
+/*
+    CALCOLO DEI RECORD NUOVI O MODIFICATI
+    Si vuole isolare solo i record che sono veramente cambiati (operazione MINUS)
+    Risultato contiene solo i prodotti nuovi o i prodotti esistenti in cui almeno un campo è cambiato
+*/
+
 {% if is_incremental() %}
 new_records as (
     select * from source
@@ -30,6 +36,12 @@ new_records as (
         is_deleted from {{ this }}
 ),
 {% endif %}
+
+/*
+    CALCOLO DEL DELTA
+    CTE se in modalità incrementale, new_records
+    CTE se non in modalità incrementale, source
+*/
 
 delta_calc as (
     select
