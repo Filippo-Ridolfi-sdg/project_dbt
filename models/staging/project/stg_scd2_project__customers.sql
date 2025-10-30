@@ -6,8 +6,11 @@
     ) 
 }}
 
+/*
+    Carica i dati di origine dalla tabella appropriata in base al tipo di esecuzione
+*/
+
 with source_data as (
-    -- Seleziono tutti i record dalla tabella appropriata e genero la chiave surrogata
     select
         *,
         {{ dbt_utils.generate_surrogate_key(['customer_cd', 'last_update']) }} as customer_update_id
@@ -20,7 +23,10 @@ with source_data as (
 ),
 
 {% if is_incremental() %}
--- 1. Identifica i record NUOVI o MODIFICATI nel set di dati sorgente
+
+/*
+    Isola solo i record della sorgente che sono nuovi o modificati
+*/
 changed_records_source as (
     select
         s.*
@@ -32,7 +38,9 @@ changed_records_source as (
 ),
 {% endif %}
 
--- 2. Righe da INSERIRE (Nuovi o versioni aggiornate)
+/*
+    Prepara le nuove versioni dei record
+*/
 rows_to_insert as (
     select
         customer_update_id,
@@ -45,18 +53,22 @@ rows_to_insert as (
         is_deleted,
         current_timestamp() as dbt_updated_at,
         last_update as valid_from,
-        null as valid_to,          -- La versione più recente è 'aperta'
-        true as is_current         -- Contrassegna come record corrente
+        null as valid_to,          
+        true as is_current         
     from 
     {% if is_incremental() %}
-        changed_records_source     -- In incrementale, inseriamo solo le righe modificate
+        changed_records_source     
     {% else %}
-        source_data                -- In full-refresh, inseriamo tutto
+        source_data                
     {% endif %}
 ),
 
 {% if is_incremental() %}
--- 3. Righe da AGGIORNARE/CHIUDERE (Le vecchie versioni che devono essere contrassegnate come non più correnti)
+
+/*
+    Prepara i record esistenti da aggiornare/chiudere
+*/
+
 rows_to_update as (
     select
         t.customer_update_id,
@@ -69,18 +81,21 @@ rows_to_update as (
         t.is_deleted,
         t.dbt_updated_at,
         t.valid_from,
-        s.last_update as valid_to, -- Usa il timestamp della nuova versione come 'valid_to'
-        false as is_current        -- Contrassegna come record non più corrente
+        s.last_update as valid_to, 
+        false as is_current        
     from {{ this }} as t
-    -- Unisci con i record sorgente modificati per trovare i record 'is_current = true' da chiudere
+    
     inner join changed_records_source s
         on t.customer_cd = s.customer_cd
     where t.is_current = true
 ),
 {% endif %}
 
+/*
+    Combina i record da inserire e i record esistenti da aggiornare/chiudere
+*/
+
 final as (
-    -- Combina i record da inserire e i record esistenti da aggiornare/chiudere
     select * from rows_to_insert
     
     {% if is_incremental() %}
